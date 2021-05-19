@@ -27,7 +27,7 @@ connection.connect((err) => {
 app.post('/', (req, res) => {
 	const user = req.body;
 	console.log(user);
-	res.json('UserDetails recieved by the server!!');
+	res.json('UserVerified');
 
 	const userDetails = {
 		customerId: user.userId,
@@ -39,9 +39,9 @@ app.post('/', (req, res) => {
 
 	connection.query(sql, userDetails, (err, rows) => {
 		if (err) {
-			console.log('User Query Unsuccessful');
+			console.log('User Already exists!');
 		} else {
-			console.log('User Query ran successfully ');
+			console.log('New user added!');
 			console.log(rows);
 		}
 	});
@@ -76,6 +76,26 @@ app.get('/category', (req, res) => {
 			console.log(rows);
 			res.send(rows);
 			console.log('Data sent successfully ');
+		}
+	});
+});
+
+//Query to recieve from category from the frontEnd and return the collction related to that.
+app.post('/collections', (req, res) => {
+	const category = req.body;
+	console.log(category);
+	console.log(category.collection);
+
+	var sql =
+		'SELECT productId,productName,productPrice,productImage FROM product left join category on product.categoryId=category.category_id where categoryName = ?';
+
+	connection.query(sql, category.collection, (err, rows) => {
+		if (err) {
+			console.log('Error');
+		} else {
+			res.json(rows);
+			console.log('Successful');
+			console.log(rows);
 		}
 	});
 });
