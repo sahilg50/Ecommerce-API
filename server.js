@@ -66,7 +66,7 @@ app.post('/item', (req, res) => {
 
 // prettier-ignore
 
-//Query to get Category data from the server
+//Query to get broad Category data from the server(Directory Data)
 app.get('/category', (req, res) => {
 	var sql = ("select * from category WHERE category like '%broad%';");
 	connection.query(sql, (err, rows) => {
@@ -83,19 +83,30 @@ app.get('/category', (req, res) => {
 //Query to recieve from category from the frontEnd and return the collction related to that.
 app.post('/collections', (req, res) => {
 	const category = req.body;
-	console.log(category);
-	console.log(category.collection);
 
 	var sql =
 		'SELECT productId,productName,productPrice,productImage FROM product left join category on product.categoryId=category.category_id where categoryName = ?';
 
 	connection.query(sql, category.collection, (err, rows) => {
 		if (err) {
-			console.log('Error');
+			console.log('Collection Error');
 		} else {
 			res.json(rows);
 			console.log('Successful');
-			console.log(rows);
+		}
+	});
+});
+
+//Fetch total number of categories.
+app.get('/total_categories', (req, res) => {
+	var sql = 'select category_id,categoryName from category';
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('Total_Categories Error');
+		} else {
+			const test = JSON.stringify(rows);
+			res.json(JSON.parse(test));
+			console.log(test);
 		}
 	});
 });
