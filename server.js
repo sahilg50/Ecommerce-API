@@ -4,7 +4,9 @@ const mysql = require('mysql');
 const cors = require('cors');
 const app = express();
 
+let user = {};
 app.use(bodyParser.json());
+
 app.use(cors());
 
 var connection = mysql.createConnection({
@@ -25,8 +27,7 @@ connection.connect((err) => {
 
 //Query to Store user in the databse
 app.post('/', (req, res) => {
-	const user = req.body;
-	console.log(user);
+	user = req.body;
 	res.json('UserVerified');
 
 	const userDetails = {
@@ -73,7 +74,6 @@ app.get('/category', (req, res) => {
 		if (err) {
 			console.log('Category Unsuccessful');
 		} else {
-			console.log(rows);
 			res.send(rows);
 			console.log('Data sent successfully ');
 		}
@@ -106,7 +106,28 @@ app.get('/total_categories', (req, res) => {
 		} else {
 			const test = JSON.stringify(rows);
 			res.json(JSON.parse(test));
-			console.log(test);
+		}
+	});
+});
+
+//Add the Items to the cart
+app.post('/add_item_to_cart', (req, res) => {
+	const cart_Id = 'cart'.concat(user.userId);
+	const product_Id = req.body.id;
+	console.log(cart_Id);
+	console.log(product_Id);
+
+	var sql =
+		"use ecommerce;SET SQL_SAFE_UPDATES = 0;set @productId='3';set @cartId = '1';create table temp (productId varchar(20),cartId varchar(20));Insert into temp VALUES(@productId, @cartId);UPDATE cart set Quantity =Quantity+1 where productId = @productId and cartId=@cartId;insert into cart(productId, CartId, Quantity)select productId, cartId, 1 as'Quantity' from temp where productId not in (select productId from cart where cartId=@cartId);Drop table temp;";
+
+	const vars = [product_Id, cart_Id];
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log(err);
+		} else {
+			const test = JSON.stringify(rows);
+			res.json(JSON.parse(test));
+			console.log(rows);
 		}
 	});
 });
