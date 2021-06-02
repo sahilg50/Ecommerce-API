@@ -129,21 +129,6 @@ app.get('/retrieve_cart_items', (req, res) => {
 	});
 });
 
-// //Retrieve item when user logins
-// app.post('/retrieve_item', (req, res) => {
-// 	var sql =
-// 		'';
-// 	connection.query(sql, cart_Id, (err, rows) => {
-// 		if (err) {
-// 			console.log('Cart Items cannot be sent to the frontend');
-// 		} else {
-// 			console.log(rows);
-// 			const test = JSON.stringify(rows);
-// 			res.json(JSON.parse(test));
-// 		}
-// 	});
-// });
-
 //Insert a new item to the cart
 app.post('/insert_item_to_cart', (req, res) => {
 	console.log(req.body);
@@ -218,9 +203,38 @@ app.post('/clear_item_from_cart', (req, res) => {
 	});
 });
 
+app.post('/place_order', (req, res) => {
+	var sql =
+		"insert into order_product_cart(cartId,productId,quantity,totalAmount,orderDate,OrderId)select cart.cartId,product.ProductId,Quantity,productPrice,'2015-06-07' as orderDate ,? as orderId from cart left join product on cart.productId=product.productId where cartId=?;";
+
+	var order = [req.body.OrderId, cart_Id];
+
+	connection.query(sql, order, (err, rows) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json('Order Placed Sucessfully');
+			console.log(rows);
+		}
+	});
+});
+
+app.get('/empty_the_cart', (req, res) => {
+	console.log(req.body);
+	var sql = 'Delete from cart Where cartId=?';
+
+	connection.query(sql, cart_Id, (err, rows) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json('Cart Emptied');
+			console.log(rows);
+		}
+	});
+});
+
 app.listen(4000, () => {
 	console.log('app is running on port 4000');
 });
 
-// 	var sql =
-// 		"use ecommerce;SET SQL_SAFE_UPDATES = 0;set @productId='3';set @cartId = '1';create table temp (productId varchar(20),cartId varchar(20));Insert into temp VALUES(@productId, @cartId);UPDATE cart set Quantity =Quantity+1 where productId = @productId and cartId=@cartId;insert into cart(productId, CartId, Quantity)select productId, cartId, 1 as'Quantity' from temp where productId not in (select productId from cart where cartId=@cartId);Drop table temp;";
+// connection.end();
