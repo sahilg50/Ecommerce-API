@@ -84,6 +84,32 @@ app.get('/category', (req, res) => {
 	});
 });
 
+app.get('/men_women', (req, res) => {
+	var sql = 'select * from gender;';
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('Gender Unsuccessful');
+		} else {
+			res.send(rows);
+			console.log('Data sent successfully ');
+		}
+	});
+});
+
+//Retrieve top brands
+app.get('/brands', (req, res) => {
+	var sql = 'select * from brand ;';
+
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('Brands Unsuccessful');
+		} else {
+			res.send(rows);
+			console.log('Data sent successfully ');
+		}
+	});
+});
+
 //Query to recieve from category from the frontEnd and return the collction related to that.
 app.post('/collections', (req, res) => {
 	const category = req.body;
@@ -94,6 +120,54 @@ app.post('/collections', (req, res) => {
 	connection.query(sql, category.collection, (err, rows) => {
 		if (err) {
 			console.log('Collection Error');
+		} else {
+			res.json(rows);
+			console.log('Successful');
+		}
+	});
+});
+
+//Fetch Men and women
+app.post('/collections_men_women', (req, res) => {
+	const category = req.body;
+
+	var sql =
+		'select productId,productName,productPrice,productImage from product left join gender on product.genderid=gender.genderId where gender=?';
+
+	connection.query(sql, category.collection, (err, rows) => {
+		if (err) {
+			console.log('Collection Error');
+		} else {
+			res.json(rows);
+			console.log('Successful');
+		}
+	});
+});
+
+//Retrieve brand items based upon the brand name
+app.post('/collections_brands', (req, res) => {
+	const category = req.body;
+
+	var sql =
+		'select productId,productName,productPrice,productImage from product left join brand on product.brandId=brand.brandid where brandname=?;';
+
+	connection.query(sql, category.collection, (err, rows) => {
+		if (err) {
+			console.log('Brand Collection Error');
+		} else {
+			res.json(rows);
+			console.log('Successful');
+		}
+	});
+});
+
+//Retrieve all brand names
+app.get('/collections_brandnames', (req, res) => {
+	var sql = 'select brandname from brand';
+
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('BrandNames Error');
 		} else {
 			res.json(rows);
 			console.log('Successful');
@@ -317,3 +391,32 @@ app.listen(4000, () => {
 });
 
 // connection.end();
+
+//Targets
+
+//Encryption in seller
+//admin
+//orders page re render
+
+//
+
+//Remember to explain the auto increment
+
+//DML Trigger wasn't running
+
+/* SET SQL_SAFE_UPDATES = 0;
+set @productId='3';
+set @cartId = '1';
+
+create table temp (productId varchar(20),cartId varchar(20));
+
+Insert into temp VALUES(@productId, @cartId);
+
+UPDATE cart set Quantity =Quantity+1 where productId = @productId and cartId=@cartId;
+
+insert into cart
+(productId, CartId, Quantity)
+select productId, cartId, 1 as'Quantity' from temp where productId not in (select productId from cart where cartId=@cartId);
+
+Drop table temp;
+select * from cart; */
