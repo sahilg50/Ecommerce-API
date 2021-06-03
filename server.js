@@ -250,7 +250,7 @@ app.get('/get_distinct_orders', (req, res) => {
 	});
 });
 
-//Get OrderItems based Uoin OrderId
+//Get OrderItems based upon OrderId
 app.post('/get_orderItems', (req, res) => {
 	console.log('New Fetch');
 	console.log(req.body.orderId);
@@ -258,6 +258,20 @@ app.post('/get_orderItems', (req, res) => {
 		'SELECT * FROM order_product_cart natural join product where orderId=?';
 
 	connection.query(sql, req.body.orderId, (err, rows) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(rows);
+			console.log(rows);
+		}
+	});
+});
+
+//Get all OrderItems
+app.get('/get_all_orderItems', (req, res) => {
+	var sql =
+		'select product.productId as id, productName as name,productImage as imageUrl,productPrice as price, quantity as quantity,orderDate as date from order_product_cart left join product on order_product_cart.productId=product.productId where cartId=?';
+	connection.query(sql, cart_Id, (err, rows) => {
 		if (err) {
 			console.log(err);
 		} else {
