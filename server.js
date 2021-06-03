@@ -203,9 +203,10 @@ app.post('/clear_item_from_cart', (req, res) => {
 	});
 });
 
+//Place Orders
 app.post('/place_order', (req, res) => {
 	var sql =
-		"insert into order_product_cart(cartId,productId,quantity,totalAmount,orderDate,OrderId)select cart.cartId,product.ProductId,Quantity,productPrice,'2015-06-07' as orderDate ,? as orderId from cart left join product on cart.productId=product.productId where cartId=?;";
+		'insert into order_product_cart(cartId,productId,quantity,totalAmount,orderDate,OrderId)select cart.cartId,product.ProductId,Quantity,productPrice,curdate() as orderDate ,? as orderId from cart left join product on cart.productId=product.productId where cartId=?;';
 
 	var order = [req.body.OrderId, cart_Id];
 
@@ -219,6 +220,7 @@ app.post('/place_order', (req, res) => {
 	});
 });
 
+//Empty The Cart
 app.get('/empty_the_cart', (req, res) => {
 	console.log(req.body);
 	var sql = 'Delete from cart Where cartId=?';
@@ -228,6 +230,69 @@ app.get('/empty_the_cart', (req, res) => {
 			console.log(err);
 		} else {
 			res.json('Cart Emptied');
+			console.log(rows);
+		}
+	});
+});
+
+//Get Distinct ORders
+app.get('/get_distinct_orders', (req, res) => {
+	var sql =
+		'SELECT distinct orderId FROM order_product_cart natural join product where cartId=?';
+
+	connection.query(sql, cart_Id, (err, rows) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(rows);
+			console.log(rows);
+		}
+	});
+});
+
+//Get OrderItems based Uoin OrderId
+app.post('/get_orderItems', (req, res) => {
+	console.log('New Fetch');
+	console.log(req.body.orderId);
+	var sql =
+		'SELECT * FROM order_product_cart natural join product where orderId=?';
+
+	connection.query(sql, req.body.orderId, (err, rows) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(rows);
+			console.log(rows);
+		}
+	});
+});
+
+//Verify Seller
+app.post('/seller_login', (req, res) => {
+	console.log(req.body);
+
+	var sql =
+		'select true from seller where sellerusername=? and sellerPassword=?';
+
+	var seller_info = [req.body.sellerusername, req.body.password];
+	connection.query(sql, seller_info, (err, rows) => {
+		if (err) {
+			console.log('Seller Login Error');
+		} else {
+			res.json(rows);
+			console.log(rows);
+		}
+	});
+});
+
+//Get Ccontact Info
+app.get('/get_contactus', (req, res) => {
+	var sql = 'select states, TollFreeNumber from communication';
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('Contact details Error');
+		} else {
+			res.json(rows);
 			console.log(rows);
 		}
 	});
