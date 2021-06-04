@@ -130,7 +130,7 @@ app.post('/collections', (req, res) => {
 
 //Fetch Men and women
 app.post('/collections_men_women', (req, res) => {
-	const category = req.body;
+	var category = req.body;
 
 	var sql =
 		'select productId,productName,productPrice,productImage from product left join gender on product.genderid=gender.genderId where gender=?';
@@ -145,9 +145,24 @@ app.post('/collections_men_women', (req, res) => {
 	});
 });
 
+// Fetch Seller Name
+app.post('/seller_name', (req, res) => {
+	var seller = req.body;
+
+	var sql = 'select sellerName from seller where sellerusername=?';
+	connection.query(sql, seller.name, (err, rows) => {
+		if (err) {
+			console.log('Seller Name Cannot be Retrieved ');
+		} else {
+			res.json(rows);
+			console.log('Successful');
+		}
+	});
+});
+
 //Retrieve brand items based upon the brand name
 app.post('/collections_brands', (req, res) => {
-	const category = req.body;
+	var category = req.body;
 
 	var sql =
 		'select productId,productName,productPrice,productImage from product left join brand on product.brandId=brand.brandid where brandname=?;';
