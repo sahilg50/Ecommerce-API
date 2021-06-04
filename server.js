@@ -53,8 +53,9 @@ app.post('/', (req, res) => {
 });
 
 //Query to store items in the server
-app.post('/item', (req, res) => {
+app.post('/seller_adding_product', (req, res) => {
 	itemDetails = req.body;
+	console.log(itemDetails);
 	res.json('ItemsDetails recieved by the server!!');
 
 	var sql = 'insert into product set ?';
@@ -97,7 +98,7 @@ app.get('/men_women', (req, res) => {
 });
 
 //Retrieve top brands
-app.get('/brands', (req, res) => {
+app.get('/top_brands', (req, res) => {
 	var sql = 'select * from brand ;';
 
 	connection.query(sql, (err, rows) => {
@@ -181,6 +182,48 @@ app.get('/total_categories', (req, res) => {
 	connection.query(sql, (err, rows) => {
 		if (err) {
 			console.log('Total_Categories Error');
+		} else {
+			const test = JSON.stringify(rows);
+			res.json(JSON.parse(test));
+		}
+	});
+});
+
+//Fetch all brandnames and brandids
+app.get('/brands', (req, res) => {
+	var sql = 'select brandid,brandname from brand';
+
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('All_brands Error');
+		} else {
+			const test = JSON.stringify(rows);
+			res.json(JSON.parse(test));
+		}
+	});
+});
+
+// Fetch all color names and colorids
+app.get('/colors', (req, res) => {
+	var sql = 'select * from color';
+
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('All_Colors Error');
+		} else {
+			const test = JSON.stringify(rows);
+			res.json(JSON.parse(test));
+		}
+	});
+});
+
+// Fetch all genders and genderids
+app.get('/gender', (req, res) => {
+	var sql = 'select * from gender';
+
+	connection.query(sql, (err, rows) => {
+		if (err) {
+			console.log('All_gender Error');
 		} else {
 			const test = JSON.stringify(rows);
 			res.json(JSON.parse(test));
@@ -398,9 +441,11 @@ app.listen(4000, () => {
 //admin
 //orders page re render
 
-//
+//Remember to explain the error
 
 //Remember to explain the auto increment
+
+//Open the tablevisualization
 
 //DML Trigger wasn't running
 
