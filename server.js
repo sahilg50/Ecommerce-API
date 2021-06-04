@@ -54,18 +54,30 @@ app.post('/', (req, res) => {
 
 //Query to store items in the server
 app.post('/seller_adding_product', (req, res) => {
-	itemDetails = req.body;
-	console.log(itemDetails);
-	res.json('ItemsDetails recieved by the server!!');
+	console.log('seller adding');
+
+	var Details = req.body;
+	console.log(Details);
 
 	var sql = 'insert into product set ?';
 
-	connection.query(sql, itemDetails, (err, rows) => {
+	connection.query(sql, Details.itemDetails, (err, rows) => {
 		if (err) {
-			console.log('Unsuccessful');
+			console.log('Product not added to Product Table');
 		} else {
-			console.log('Query ran successfully ');
-			console.log(rows);
+			console.log('Product Added to Product Table');
+		}
+	});
+
+	var sql =
+		'insert into seller_product SELECT ? as seller_username,productId FROM product order by productId desc limit 1;';
+
+	connection.query(sql, Details.sellerusername, (err, rows) => {
+		if (err) {
+			console.log('Product not added to Seller Product Table');
+		} else {
+			console.log('Product Added to Seller Product Table');
+			res.json('Successful');
 		}
 	});
 });
